@@ -29,6 +29,9 @@ jobs:
         uses: ./
         with:
           path: test
-      - run: echo "$JSON" | jq
+      - run: |
+          echo "$MAIN_OUTPUTS_FEATURES" | jq
+          echo "$MAIN_OUTPUTS_CHANGED_FEATURES" | jq
         env:
-          JSON: ${{ toJSON(steps.main.outputs) }}
+          MAIN_OUTPUTS_FEATURES: ${{ steps.main.outputs.features }}
+          MAIN_OUTPUTS_CHANGED_FEATURES: ${{ steps.main.outputs.features }}
