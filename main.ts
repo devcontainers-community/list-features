@@ -52,7 +52,7 @@ if (baseRef) {
   console.log(changedFiles);
 
   const changedIds = [...new Set(changedFiles
-    .map((x) => x.match(/src\/(.*?)\//)?.[1])
+    .map((x) => x.match(/(?:src|test)\/(.*?)\//)?.[1])
     .filter((x) => x))].filter(x => allFeatures.map(y => y.id).includes(x));
 
   changedFeatures = (
@@ -70,5 +70,5 @@ core.setOutput("changed-features", JSON.stringify(changedFeatures));
 if (changedFeatures.length) {
   core.setOutput("relevant-features", JSON.stringify(changedFeatures))
 } else {
-  core.setOutput("relevant-features", JSON.stringify(features))
+  core.setOutput("relevant-features", JSON.stringify(allFeatures))
 }
