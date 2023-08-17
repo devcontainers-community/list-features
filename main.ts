@@ -1,54 +1,70 @@
 #!/usr/bin/env -S deno run -A
-import * as core from "npm:@actions/core"
-import { readFile, writeFile } from "node:fs/promises"
-import process from "node:process"
-import { glob } from "npm:glob"
-import { $ } from "npm:zx"
+import * as core from "npm:@actions/core";
+import { readFile, writeFile } from "node:fs/promises";
+import process from "node:process";
+import { glob } from "npm:glob";
+import { $ } from "npm:zx";
 
-const path = core.getInput("path")
-process.chdir(path)
-$.cwd = process.cwd()
+const path = core.getInput("path");
+process.chdir(path);
+$.cwd = process.cwd();
 
 const features = await Promise.all(
-  (await glob("src/*/devcontainer-feature.json")).map(f =>
-    readFile(f, "utf8")
-      .then(x => JSON.parse(x))
-    )
-)
-core.setOutput("features", JSON.stringify(features))
+  (
+    await glob("src/*/devcontainer-feature.json")
+  ).map((f) => readFile(f, "utf8").then((x) => JSON.parse(x)))
+);
+core.setOutput("features", JSON.stringify(features));
 
-const ref = core.getInput("ref")
-const event = JSON.parse(process.env.GITHUB_EVENT)
-console.log(event)
+const eventName = process.env.GITHUB_EVENT_NAME;
+const event = JSON.parse(process.env.GITHUB_EVENT);
+console.log("event", event);
 
-let baseRef: string | undefined
-if (event.name === "pull_request") {
-  baseRef = event.pull_request.base.sha
-} else if (event.name === "push") {
-  baseRef = event.before
+let baseRef = core.getInput("base_ref");
+if (!baseRef) {
+  if (eventName === "push") {
+    baseRef = event.before;
+  }
 }
-console.log(baseRef)
 
-let changedFeatures: any[]
+let ref = core.getInput("ref");
+if (!ref) {
+  if (eventName === "push") {
+    ref = event.after;
+  }
+}
+
+console.log("before", baseRef);
+console.log("after", ref);
+
+let changedFeatures: any[];
 if (baseRef) {
-  const changedFiles = (await $`git diff --name-only ${baseRef} ${ref}`).toString().split(/\r?\n/g)
-  console.log(changedFiles)
+  const changedFiles = (await $`git diff --name-only ${baseRef} ${ref}`)
+    .toString()
+    .split(/\r?\n/g);
+  console.log(changedFiles);
 
-  const changedIds = changedFiles.map(x => /src\/(.*?)\//.match(x)?.[1]).filter(x => x)
-  changedFeatures = (await Promise.all(
-    changedIds.map(x => readFile(`src/${id}/devcontainer-feature.json`, "utf8")
-      .catch(() => {}))
-  ))
-    .filter(x => x)
-    .map(x => {
+  const changedIds = changedFiles
+    .map((x) => /src\/(.*?)\//.match(x)?.[1])
+    .filter((x) => x);
+
+  changedFeatures = (
+    await Promise.all(
+      changedIds.map((x) =>
+        readFile(`src/${id}/devcontainer-feature.json`, "utf8").catch(() => {})
+      )
+    )
+  )
+    .filter((x) => x)
+    .map((x) => {
       try {
-        return JSON.parse(x)
+        return JSON.parse(x);
       } catch {}
     })
-    .filter(x => x)
+    .filter((x) => x);
 } else {
-  changedFeatures = []
+  changedFeatures = [];
 }
-console.log(changedFeatures)
+console.log(changedFeatures);
 
-core.setOutput("changed-features", JSON.stringify(changedFeatures))
+core.setOutput("changed-features", JSON.stringify(changedFeatures));
