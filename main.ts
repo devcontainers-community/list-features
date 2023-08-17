@@ -4,6 +4,9 @@ import { readFile, writeFile } from "node:fs/promises"
 import process from "node:process"
 import { glob } from "npm:glob"
 
+const path = core.getInput("path")
+process.chdir(path)
+
 const features = await Promise.all(
   (await glob("src/*/devcontainer-feature.json")).map(f => readFile(f, "utf8"))
 )
@@ -14,6 +17,7 @@ core.setOutput("features", JSON.stringify(features))
 const { src_files, test_files } = JSON.parse(process.env.PATHS_FILTER_OUTPUTS)
 
 const changedFeatureIds = [
+  // These paths are from BEFORE the 'process.chdir()'
   ...src_files.map(x => x.match(/src\/(.*?)\//)[1]).filter(x => x),
   ...test_files.map(x => x.match(/test\/(.*?)\//)[1]).filter(x => x),
 ]
