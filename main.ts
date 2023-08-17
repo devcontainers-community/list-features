@@ -16,6 +16,8 @@ core.setOutput("features", JSON.stringify(features))
 // https://github.com/dorny/paths-filter
 const srcFiles = JSON.parse(process.env.PATHS_FILTER_OUTPUTS_SRC_FILES)
 const testFiles = JSON.parse(process.env.PATHS_FILTER_OUTPUTS_TEST_FILES)
+console.dir(srcFiles)
+conosole.dir(testFiles)
 
 const changedFeatureIds = [
   // These paths are from BEFORE the 'process.chdir()'
