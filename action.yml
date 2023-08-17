@@ -1,5 +1,8 @@
 name: List Dev Container Features
 description: 📃 List all features in a monorepo in a GitHub Action
+branding:
+  icon: list
+  color: blue
 inputs:
   path:
     default: .
