@@ -8,7 +8,10 @@ const path = core.getInput("path")
 process.chdir(path)
 
 const features = await Promise.all(
-  (await glob("src/*/devcontainer-feature.json")).map(f => readFile(f, "utf8"))
+  (await glob("src/*/devcontainer-feature.json")).map(f =>
+    readFile(f, "utf8")
+      .then(x => JSON.parse(x))
+    )
 )
 core.setOutput("features", JSON.stringify(features))
 
