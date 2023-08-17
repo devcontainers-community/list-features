@@ -9,13 +9,13 @@ const path = core.getInput("path");
 process.chdir(path);
 $.cwd = process.cwd();
 
-const features = await Promise.all(
+const allFeatures = await Promise.all(
   (
     await glob("src/*/devcontainer-feature.json")
   ).map((f) => readFile(f, "utf8").then((x) => JSON.parse(x)))
 );
-console.log("features", features)
-core.setOutput("features", JSON.stringify(features));
+console.log("all-features", features)
+core.setOutput("all-features", JSON.stringify(allFeatures));
 
 const eventName = process.env.GITHUB_EVENT_NAME;
 const event = JSON.parse(process.env.GITHUB_EVENT);
@@ -51,9 +51,9 @@ if (baseRef) {
     .split(/\r?\n/g);
   console.log(changedFiles);
 
-  const changedIds = changedFiles
+  const changedIds = [...new Set(changedFiles
     .map((x) => x.match(/src\/(.*?)\//)?.[1])
-    .filter((x) => x);
+    .filter((x) => x))];
 
   changedFeatures = (
     await Promise.all(
