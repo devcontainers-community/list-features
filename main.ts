@@ -57,7 +57,7 @@ if (baseRef) {
   changedFeatures = (
     await Promise.all(
       changedIds.map((x) =>
-        readFile(`src/${id}/devcontainer-feature.json`, "utf8").catch(() => {})
+        readFile(`src/${x}/devcontainer-feature.json`, "utf8").catch(() => {})
       )
     )
   )
