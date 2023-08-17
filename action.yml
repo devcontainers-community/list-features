@@ -29,5 +29,6 @@ runs:
       shell: bash
       env:
         INPUT_PATH: ${{ inputs.path }}
-        PATHS_FILTER_OUTPUTS_SRC_FILES: ${{ toJSON(steps.paths-filter.outputs.src_files) }}
-        PATHS_FILTER_OUTPUTS_TEST_FILES: ${{ toJSON(steps.paths-filter.outputs.test_files) }}
+        # These are ALREADY JSON-encoded to JSON strings, so DON'T double-encode them.
+        PATHS_FILTER_OUTPUTS_SRC_FILES: ${{ steps.paths-filter.outputs.src_files }}
+        PATHS_FILTER_OUTPUTS_TEST_FILES: ${{ steps.paths-filter.outputs.test_files }}
