@@ -19,9 +19,15 @@ core.setOutput("features", JSON.stringify(features))
 
 const ref = core.getInput("ref")
 const event = JSON.parse(process.env.GITHUB_EVENT)
-let changedFeatures;
-if (event.pull_request) {
-  const baseRef = event.pull_request.base.ref
+let baseRef: string | undefined
+if (event.name === "pull_request") {
+  baseRef = event.pull_request.base.sha
+} else if (event.name === "push") {
+  baseRef = event.before
+}
+
+let changedFeatures: any[]
+if (baseRef) {
   const changedFiles = (await $`git diff --name-only ${baseRef} ${ref}`).toString().split(/\r?\n/g)
   const changedIds = changedFiles.map(x => /src\/(.*?)\//.match(x)?.[1]).filter(x => x)
   changedFeatures = (await Promise.all(
@@ -38,4 +44,5 @@ if (event.pull_request) {
 } else {
   changedFeatures = []
 }
+
 core.setOutput("changed-features", JSON.stringify(changedFeatures))
