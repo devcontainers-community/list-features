@@ -3,6 +3,9 @@ description: 📃 List all features in a monorepo in a GitHub Action
 inputs:
   path:
     default: .
+  ref:
+    default: ${{ github.ref }}
+  base-ref: {}
 outputs:
   features:
     value: ${{ steps.main.outputs.features }}
@@ -11,24 +14,9 @@ outputs:
 runs:
   using: composite
   steps:
-    - id: paths-filter
-      uses: dorny/paths-filter@v2
-      with:
-        list-files: json
-        filters: |
-          src: 
-            - ${{ inputs.path }}/src/*/**
-          test: 
-            - ${{ inputs.path }}/test/*/**
-    - run: echo "$PATHS_FILTER_OUTPUTS" | jq
-      shell: bash
-      env:
-        PATHS_FILTER_OUTPUTS: ${{ toJSON(steps.paths-filter.outputs) }}
     - id: main
       run: '"$GITHUB_ACTION_PATH/mainw"'
       shell: bash
       env:
         INPUT_PATH: ${{ inputs.path }}
-        # These are ALREADY JSON-encoded to JSON strings, so DON'T double-encode them.
-        PATHS_FILTER_OUTPUTS_SRC_FILES: ${{ steps.paths-filter.outputs.src_files }}
-        PATHS_FILTER_OUTPUTS_TEST_FILES: ${{ steps.paths-filter.outputs.test_files }}
+        GITHUB_EVENT: ${{ toJSON(github.event) }}

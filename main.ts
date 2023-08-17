@@ -3,9 +3,11 @@ import * as core from "npm:@actions/core"
 import { readFile, writeFile } from "node:fs/promises"
 import process from "node:process"
 import { glob } from "npm:glob"
+import { $ } from "npm:zx"
 
 const path = core.getInput("path")
 process.chdir(path)
+$.cwd = process.cwd()
 
 const features = await Promise.all(
   (await glob("src/*/devcontainer-feature.json")).map(f =>
@@ -15,23 +17,25 @@ const features = await Promise.all(
 )
 core.setOutput("features", JSON.stringify(features))
 
-// These are the CHANGED files.
-// https://github.com/dorny/paths-filter
-const srcFiles = JSON.parse(process.env.PATHS_FILTER_OUTPUTS_SRC_FILES)
-const testFiles = JSON.parse(process.env.PATHS_FILTER_OUTPUTS_TEST_FILES)
-console.dir(srcFiles)
-console.dir(testFiles)
-
-const changedFeatureIds = [
-  // These paths are from BEFORE the 'process.chdir()'
-  ...srcFiles.map(x => x.match(/src\/(.*?)\//)[1]).filter(x => x),
-  ...testFiles.map(x => x.match(/test\/(.*?)\//)[1]).filter(x => x),
-]
-const changedFeatures = (await Promise.all(
-  changedFeatureIds.map(id =>
-    readFile(`src/${id}/devcontainer-feature.json`, "utf8")
-      .then(x => JSON.parse(x))
-      .catch(() => {})
-  )
-)).filter(x => x)
+const ref = core.getInput("ref")
+const event = JSON.parse(process.env.GITHUB_EVENT)
+let changedFeatures;
+if (event.pull_request) {
+  const baseRef = event.pull_request.base.ref
+  const changedFiles = (await $`git diff --name-only ${baseRef} ${ref}`).toString().split(/\r?\n/g)
+  const changedIds = changedFiles.map(x => /src\/(.*?)\//.match(x)?.[1]).filter(x => x)
+  changedFeatures = (await Promise.all(
+    changedIds.map(x => readFile(`src/${id}/devcontainer-feature.json`, "utf8")
+      .catch(() => {}))
+  ))
+    .filter(x => x)
+    .map(x => {
+      try {
+        return JSON.parse(x)
+      } catch {}
+    })
+    .filter(x => x)
+} else {
+  changedFeatures = []
+}
 core.setOutput("changed-features", JSON.stringify(changedFeatures))
