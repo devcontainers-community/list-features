@@ -20,21 +20,26 @@ const eventName = process.env.GITHUB_EVENT_NAME;
 const event = JSON.parse(process.env.GITHUB_EVENT);
 console.log("event", event);
 
+// BEFORE
 let baseRef = core.getInput("base_ref");
 if (!baseRef) {
   if (eventName === "push") {
     baseRef = event.before;
+  } else if (eventName === "pull_request") {
+    baseRef = event.pull_request.base.sha;
   }
 }
+console.log("before", baseRef);
 
+// AFTER
 let ref = core.getInput("ref");
 if (!ref) {
   if (eventName === "push") {
     ref = event.after;
+  } else if (eventName === "pull_request") {
+    ref = event.pull_request.head.sha;
   }
 }
-
-console.log("before", baseRef);
 console.log("after", ref);
 
 let changedFeatures: any[];
@@ -52,7 +57,7 @@ if (baseRef) {
   changedFeatures = (
     await Promise.all(
       changedIds.map((x) =>
-        readFile(`src/${id}/devcontainer-feature.json`, "utf8").catch(() => {})
+        readFile(`src/${x}/devcontainer-feature.json`, "utf8").catch(() => {})
       )
     )
   )
