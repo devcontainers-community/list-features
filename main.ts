@@ -14,6 +14,7 @@ const features = await Promise.all(
     await glob("src/*/devcontainer-feature.json")
   ).map((f) => readFile(f, "utf8").then((x) => JSON.parse(x)))
 );
+console.log("features", features)
 core.setOutput("features", JSON.stringify(features));
 
 const eventName = process.env.GITHUB_EVENT_NAME;
@@ -71,6 +72,11 @@ if (baseRef) {
 } else {
   changedFeatures = [];
 }
-console.log(changedFeatures);
-
+console.log("changed-features", changedFeatures);
 core.setOutput("changed-features", JSON.stringify(changedFeatures));
+
+if (changedFeatures.length) {
+  core.setOutput("relevant-features", JSON.stringify(changedFeatures))
+} else {
+  core.setOutput("relevant-features", JSON.stringify(features))
+}
