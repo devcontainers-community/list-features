@@ -13,6 +13,8 @@ outputs:
     value: ${{ steps.main.outputs.features }}
   changed-features:
     value: ${{ steps.main.outputs.changed-features }}
+  relevant-features:
+    value: ${{ steps.main.outputs.relevant-features }}
 runs:
   using: composite
   steps:
