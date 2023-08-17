@@ -31,9 +31,9 @@ jobs:
         uses: ./
         with:
           path: test
-      - run: echo "$MAIN_OUTPUTS_FEATURES" | jq
+      - run: echo "$MAIN_OUTPUTS_ALL_FEATURES" | jq
         env:
-          MAIN_OUTPUTS_FEATURES: ${{ steps.main.outputs.features }}
+          MAIN_OUTPUTS_ALL_FEATURES: ${{ steps.main.outputs.all-features }}
       - run: echo "$MAIN_OUTPUTS_CHANGED_FEATURES" | jq
         env:
           MAIN_OUTPUTS_CHANGED_FEATURES: ${{ steps.main.outputs.changed-features }}
