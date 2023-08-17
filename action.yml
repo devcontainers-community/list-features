@@ -27,4 +27,5 @@ runs:
       shell: bash
       env:
         INPUT_PATH: ${{ inputs.path }}
-        PATHS_FILTER_OUTPUTS: ${{ toJSON(steps.paths-filter.outputs) }}
+        PATHS_FILTER_OUTPUTS_SRC_FILES: ${{ toJSON(steps.paths-filter.outputs.src_files) }}
+        PATHS_FILTER_OUTPUTS_TEST_FILES: ${{ toJSON(steps.paths-filter.outputs.test_files) }}
