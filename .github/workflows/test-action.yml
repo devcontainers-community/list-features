@@ -37,3 +37,6 @@ jobs:
       - run: echo "$MAIN_OUTPUTS_CHANGED_FEATURES" | jq
         env:
           MAIN_OUTPUTS_CHANGED_FEATURES: ${{ steps.main.outputs.changed-features }}
+      - run: echo "$MAIN_OUTPUTS_RELEVANT_FEATURES" | jq
+        env:
+          MAIN_OUTPUTS_RELEVANT_FEATURES: ${{ steps.main.outputs.relevant-features }}
