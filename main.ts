@@ -53,22 +53,14 @@ if (baseRef) {
 
   const changedIds = [...new Set(changedFiles
     .map((x) => x.match(/src\/(.*?)\//)?.[1])
-    .filter((x) => x))];
+    .filter((x) => x))].filter(x => allFeatures.map(y => y.id).includes(x));
 
   changedFeatures = (
     await Promise.all(
-      changedIds.map((x) =>
-        readFile(`src/${x}/devcontainer-feature.json`, "utf8").catch(() => {})
-      )
+      changedIds.map((x) => readFile(`src/${x}/devcontainer-feature.json`, "utf8"))
     )
   )
-    .filter((x) => x)
-    .map((x) => {
-      try {
-        return JSON.parse(x);
-      } catch {}
-    })
-    .filter((x) => x);
+    .map((x) => JSON.parse(x))
 } else {
   changedFeatures = [];
 }
