@@ -19,8 +19,8 @@ const testFiles = JSON.parse(process.env.PATHS_FILTER_OUTPUTS_TEST_FILES)
 
 const changedFeatureIds = [
   // These paths are from BEFORE the 'process.chdir()'
-  ...srcFiles?.map(x => x.match(/src\/(.*?)\//)[1]).filter(x => x),
-  ...testFiles?.map(x => x.match(/test\/(.*?)\//)[1]).filter(x => x),
+  ...srcFiles.map(x => x.match(/src\/(.*?)\//)[1]).filter(x => x),
+  ...testFiles.map(x => x.match(/test\/(.*?)\//)[1]).filter(x => x),
 ]
 const changedFeatures = (await Promise.all(
   changedFeatureIds.map(id =>
