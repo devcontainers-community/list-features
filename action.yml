@@ -9,8 +9,8 @@ inputs:
   ref: {}
   base-ref: {}
 outputs:
-  features:
-    value: ${{ steps.main.outputs.features }}
+  all-features:
+    value: ${{ steps.main.outputs.all-features }}
   changed-features:
     value: ${{ steps.main.outputs.changed-features }}
   relevant-features:
