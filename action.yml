@@ -1,0 +1,30 @@
+name: List Dev Container Features
+description: 📃 List all features in a monorepo in a GitHub Action
+inputs:
+  # path:
+  #  default: .
+outputs:
+  changed-features:
+    value: ${{ steps.main.outputs.changed-features }}
+  features:
+    value: ${{ steps.main.outputs.features }}
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: sudo apt update && sudo apt-get install -y tree jq
+    - id: paths-filter
+      uses: dorny/paths-filter@v2
+      with:
+        list-files: json
+        filters: |
+          src: 
+            - src/*/**
+          test: 
+            - test/*/**
+    - id: main
+      run: '"$GITHUB_ACTION_PATH/mainw"'
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        PATHS_FILTER_OUTPUTS: ${{ toJSON(steps.paths-filter.outputs) }}
