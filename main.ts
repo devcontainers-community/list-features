@@ -14,13 +14,13 @@ core.setOutput("features", JSON.stringify(features))
 
 // These are the CHANGED files.
 // https://github.com/dorny/paths-filter
-const { src_files, test_files } = JSON.parse(process.env.PATHS_FILTER_OUTPUTS)
-console.log(src_files, test_files, JSON.parse(process.env.PATHS_FILTER_OUTPUTS))
+const srcFiles = JSON.parse(process.env.PATHS_FILTER_OUTPUTS_SRC_FILES)
+const testFiles = JSON.parse(process.env.PATHS_FILTER_OUTPUTS_TEST_FILES)
 
 const changedFeatureIds = [
   // These paths are from BEFORE the 'process.chdir()'
-  ...src_files?.map(x => x.match(/src\/(.*?)\//)[1]).filter(x => x),
-  ...test_files?.map(x => x.match(/test\/(.*?)\//)[1]).filter(x => x),
+  ...srcFiles?.map(x => x.match(/src\/(.*?)\//)[1]).filter(x => x),
+  ...testFiles?.map(x => x.match(/test\/(.*?)\//)[1]).filter(x => x),
 ]
 const changedFeatures = (await Promise.all(
   changedFeatureIds.map(id =>
