@@ -41,11 +41,12 @@ let changedFeatures: any[];
 if (baseRef) {
   const changedFiles = (await $`git diff --name-only ${baseRef} ${ref}`)
     .toString()
+    .trim()
     .split(/\r?\n/g);
   console.log(changedFiles);
 
   const changedIds = changedFiles
-    .map((x) => /src\/(.*?)\//.match(x)?.[1])
+    .map((x) => x.match(/src\/(.*?)\//)?.[1])
     .filter((x) => x);
 
   changedFeatures = (
