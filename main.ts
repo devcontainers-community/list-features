@@ -14,7 +14,7 @@ const allFeatures = await Promise.all(
     await glob("src/*/devcontainer-feature.json")
   ).map((f) => readFile(f, "utf8").then((x) => JSON.parse(x)))
 );
-console.log("all-features", features)
+console.log("all-features", allFeatures)
 core.setOutput("all-features", JSON.stringify(allFeatures));
 
 const eventName = process.env.GITHUB_EVENT_NAME;
