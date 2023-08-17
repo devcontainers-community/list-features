@@ -24,6 +24,7 @@ let baseRef = core.getInput("base_ref");
 if (!baseRef) {
   if (eventName === "push") {
     baseRef = event.before;
+  } else if (eventName === "pull_request") {
   }
 }
 
@@ -31,6 +32,7 @@ let ref = core.getInput("ref");
 if (!ref) {
   if (eventName === "push") {
     ref = event.after;
+  } else if (eventName === "pull_request") {
   }
 }
 
