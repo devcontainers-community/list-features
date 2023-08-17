@@ -11,8 +11,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - shell: bash
-      run: sudo apt update && sudo apt-get install -y tree jq
     - id: paths-filter
       uses: dorny/paths-filter@v2
       with:
@@ -22,6 +20,10 @@ runs:
             - ${{ inputs.path }}/src/*/**
           test: 
             - ${{ inputs.path }}/test/*/**
+    - run: echo "$PATHS_FILTER_OUTPUTS" | jq
+      shell: bash
+      env:
+        PATHS_FILTER_OUTPUTS: ${{ toJSON(steps.paths-filter.outputs) }}
     - id: main
       run: '"$GITHUB_ACTION_PATH/mainw"'
       shell: bash
